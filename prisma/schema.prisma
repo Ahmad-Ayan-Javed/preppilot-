@@ -1,0 +1,178 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  role          String    @default("USER") // USER | ADMIN
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  resumes       Resume[]
+  prepKits      PrepKit[]
+  interviews    InterviewSession[]
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Resume {
+  id             String    @id @default(cuid())
+  userId         String
+  fileName       String
+  fileSize       Int
+  fileType       String    // application/pdf | application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  version        Int       @default(1)
+  rawText        String
+  parsedSections String    @default("{}") // JSON: { contact, summary, skills, experience, education, projects }
+  targetRole     String?
+  targetJd       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports        AtsReport[]
+  interviews     InterviewSession[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AtsReport {
+  id                  String   @id @default(cuid())
+  resumeId            String
+  overallScore        Int      // 0 - 100
+  breakdown           String   @default("{}") // JSON: { formatting: 18, keywordMatch: 24, sectionCompleteness: 14, impact: 15, grammarClarity: 14 }
+  matchedKeywords     String   @default("[]") // JSON: string[]
+  missingKeywords     String   @default("[]") // JSON: string[]
+  bulletRewrites      String   @default("[]") // JSON: Array<{ original, improved, reason }>
+  topFixes            String   @default("[]") // JSON: Array<{ priority, title, description }>
+  rawMetrics          String   @default("{}") // JSON: { wordCount, bulletCount, quantifiedBulletCount, actionVerbCount }
+  createdAt           DateTime @default(now())
+
+  resume              Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@index([createdAt])
+}
+
+model PrepKit {
+  id              String   @id @default(cuid())
+  userId          String
+  companyName     String
+  targetRole      String
+  level           String   @default("MID") // ENTRY | MID | SENIOR | LEAD | EXECUTIVE
+  interviewType   String   @default("TECHNICAL") // TECHNICAL | BEHAVIORAL | SYSTEM_DESIGN | HR | MIXED
+  targetJd        String?
+  companyOverview String   @default("{}") // JSON: { culture, values, businessModel, recentDevelopments }
+  interviewRounds String   @default("[]") // JSON: Array<{ roundName, focus, typicalDuration, expectations }>
+  questionBank    String   @default("[]") // JSON: Array<{ category, question, tip, samplePoints }>
+  skillGaps       String   @default("[]") // JSON: Array<{ skill, importance, recommendation, studyLinks }>
+  revisionTopics  String   @default("[]") // JSON: Array<{ topic, keyConcepts, subtopics }>
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyName, targetRole])
+}
+
+model InterviewSession {
+  id              String            @id @default(cuid())
+  userId          String
+  resumeId        String?
+  companyName     String?
+  targetRole      String
+  interviewType   String            @default("TECHNICAL")
+  level           String            @default("MID")
+  questionCount   Int               @default(5)
+  timePerQuestion Int               @default(180) // seconds
+  status          String            @default("CONFIGURED") // CONFIGURED | IN_PROGRESS | COMPLETED | ABANDONED
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume          Resume?           @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  messages        InterviewMessage[]
+  feedback        InterviewFeedback?
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model InterviewMessage {
+  id            String          @id @default(cuid())
+  sessionId     String
+  role          String          // SYSTEM | INTERVIEWER | CANDIDATE
+  content       String
+  questionIndex Int?
+  timeSpentSec  Int?
+  audioUrl      String?
+  createdAt     DateTime        @default(now())
+
+  session       InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([questionIndex])
+}
+
+model InterviewFeedback {
+  id                  String           @id @default(cuid())
+  sessionId           String           @unique
+  overallScore        Int              // 0 - 100
+  summary             String
+  rubrics             String           @default("{}") // JSON: { starMethod, technicalAccuracy, clarity, confidence, relevance }
+  questionEvaluations String           @default("[]") // JSON: Array<{ questionIndex, question, answer, score, rubricScores, feedback, idealAnswer }>
+  strengths           String           @default("[]") // JSON: string[]
+  weaknesses          String           @default("[]") // JSON: string[]
+  actionableTips      String           @default("[]") // JSON: string[]
+  createdAt           DateTime         @default(now())
+
+  session             InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}

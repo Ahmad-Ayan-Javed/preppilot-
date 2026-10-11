@@ -1,0 +1,178 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  role          String    @default("USER")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  resumes       Resume[]
+  prepKits      PrepKit[]
+  interviews    InterviewSession[]
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Resume {
+  id             String    @id @default(cuid())
+  userId         String
+  fileName       String
+  fileSize       Int
+  fileType       String
+  version        Int       @default(1)
+  rawText        String    @db.Text
+  parsedSections Json      @default("{}")
+  targetRole     String?
+  targetJd       String?   @db.Text
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports        AtsReport[]
+  interviews     InterviewSession[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AtsReport {
+  id                  String   @id @default(cuid())
+  resumeId            String
+  overallScore        Int
+  breakdown           Json     @default("{}")
+  matchedKeywords     String[]
+  missingKeywords     String[]
+  bulletRewrites      Json     @default("[]")
+  topFixes            Json     @default("[]")
+  rawMetrics          Json     @default("{}")
+  createdAt           DateTime @default(now())
+
+  resume              Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@index([createdAt])
+}
+
+model PrepKit {
+  id              String   @id @default(cuid())
+  userId          String
+  companyName     String
+  targetRole      String
+  level           String   @default("MID")
+  interviewType   String   @default("TECHNICAL")
+  targetJd        String?  @db.Text
+  companyOverview Json     @default("{}")
+  interviewRounds Json     @default("[]")
+  questionBank    Json     @default("[]")
+  skillGaps       Json     @default("[]")
+  revisionTopics  Json     @default("[]")
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyName, targetRole])
+}
+
+model InterviewSession {
+  id              String            @id @default(cuid())
+  userId          String
+  resumeId        String?
+  companyName     String?
+  targetRole      String
+  interviewType   InterviewType     @default(TECHNICAL)
+  level           ExperienceLevel   @default(MID)
+  questionCount   Int               @default(5)
+  timePerQuestion Int               @default(180)
+  status          String            @default("CONFIGURED")
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume          Resume?           @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  messages        InterviewMessage[]
+  feedback        InterviewFeedback?
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model InterviewMessage {
+  id            String          @id @default(cuid())
+  sessionId     String
+  role          String
+  content       String          @db.Text
+  questionIndex Int?
+  timeSpentSec  Int?
+  audioUrl      String?
+  createdAt     DateTime        @default(now())
+
+  session       InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([questionIndex])
+}
+
+model InterviewFeedback {
+  id                  String           @id @default(cuid())
+  sessionId           String           @unique
+  overallScore        Int
+  summary             String           @db.Text
+  rubrics             Json             @default("{}")
+  questionEvaluations Json             @default("[]")
+  strengths           String[]
+  weaknesses          String[]
+  actionableTips      String[]
+  createdAt           DateTime         @default(now())
+
+  session             InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
