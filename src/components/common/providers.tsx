@@ -18,7 +18,7 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const saved = localStorage.getItem("preppilot-theme") as Theme | null;
@@ -26,7 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       setTheme(saved);
       document.documentElement.className = saved;
     } else {
-      document.documentElement.className = "dark";
+      document.documentElement.className = "light";
     }
   }, []);
 

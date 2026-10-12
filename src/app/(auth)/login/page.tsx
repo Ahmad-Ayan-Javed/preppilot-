@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Sparkles, Mail, Lock, ArrowRight, Loader2, UserCheck } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowRight, Loader2, UserCheck, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -60,15 +60,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <div className="w-full max-w-md p-8 rounded-2xl bg-card border border-border/70 shadow-2xl relative">
-        <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-3">
-            <Sparkles className="h-6 w-6" />
+    <div className="flex-1 flex items-center justify-center p-4 py-16 bg-gradient-to-b from-blue-50/60 via-slate-50 to-white">
+      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-2xl shadow-blue-950/5 relative overflow-hidden">
+        {/* Top subtle decorative ambient glow */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-40 bg-gradient-to-r from-blue-400/20 via-indigo-400/20 to-violet-400/20 blur-3xl pointer-events-none" />
+
+        <div className="text-center mb-8 relative">
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white mb-4 shadow-lg shadow-blue-500/25">
+            <Sparkles className="h-7 w-7" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Sign in to access your resumes, prep kits, and mock interview reports
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Welcome back
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">
+            Sign in to continue practicing and auditing your resumes
           </p>
         </div>
 
@@ -77,61 +82,72 @@ export default function LoginPage() {
           type="button"
           onClick={handleDemoLogin}
           disabled={isLoading}
-          className="w-full mb-6 p-3 rounded-xl bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-all flex items-center justify-between text-left group"
+          className="w-full mb-6 p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50/50 to-blue-50 border border-blue-200/90 hover:border-blue-400/80 hover:shadow-md transition-all flex items-center justify-between text-left group"
         >
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">
-              <UserCheck className="h-4 w-4" />
+            <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-blue-600/30">
+              <UserCheck className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-primary">
-                One-Click Demo Login
+              <div className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                <span>1-Click Demo Login</span>
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded-full bg-blue-200/80 text-blue-800">
+                  Instant
+                </span>
               </div>
-              <div className="text-[11px] text-muted-foreground">
-                alex@example.com (Staff / Senior Frontend)
+              <div className="text-[11px] text-blue-600/90 font-medium mt-0.5">
+                alex@example.com (Staff / Senior Profile)
               </div>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="h-4 w-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
         </button>
 
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="border-t border-slate-200 w-full" />
+          <span className="bg-white px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider shrink-0">
+            Or credentials
+          </span>
+          <div className="border-t border-slate-200 w-full" />
+        </div>
+
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-xs">
+          <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full pl-10 pr-3.5 py-3 rounded-xl bg-slate-50/60 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 transition-all font-medium"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full pl-10 pr-3.5 py-3 rounded-xl bg-slate-50/60 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 transition-all font-medium"
               />
             </div>
           </div>
@@ -139,7 +155,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all disabled:opacity-60"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-bold text-sm hover:from-blue-700 hover:to-indigo-700 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all hover:scale-[1.01] disabled:opacity-60"
           >
             {isLoading ? (
               <>
@@ -147,14 +163,14 @@ export default function LoginPage() {
                 Signing in...
               </>
             ) : (
-              "Sign In"
+              "Sign In to PrepPilot"
             )}
           </button>
         </form>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        <p className="text-center text-xs text-slate-500 mt-6 font-medium">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-primary font-semibold hover:underline">
+          <Link href="/register" className="text-blue-600 font-bold hover:underline">
             Create account
           </Link>
         </p>

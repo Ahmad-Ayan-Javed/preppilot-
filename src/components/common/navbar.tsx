@@ -40,10 +40,10 @@ export function Navbar() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-violet-400 bg-clip-text text-transparent">
+            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
               PrepPilot
             </span>
-            <span className="hidden sm:inline-block ml-1.5 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <span className="hidden sm:inline-block ml-1.5 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
               AI ATS & Mock
             </span>
           </div>

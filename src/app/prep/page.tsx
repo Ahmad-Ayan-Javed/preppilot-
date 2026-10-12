@@ -74,7 +74,7 @@ export default function PrepKitGeneratorPage() {
   return (
     <div className="container max-w-5xl mx-auto px-4 py-10 flex-1 space-y-8">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80 dark:bg-indigo-500/10 dark:text-indigo-400 text-xs font-semibold mb-2 shadow-xs">
           <Briefcase className="h-3.5 w-3.5" />
           <span>Company Interview Intelligence</span>
         </div>

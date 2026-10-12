@@ -158,7 +158,7 @@ Tools & DevOps: Git, Docker, Jest, Playwright, Webpack, Vite, PostgreSQL, Redis`
   return (
     <div className="container max-w-5xl mx-auto px-4 py-10 flex-1">
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80 dark:bg-blue-500/10 dark:text-blue-400 text-xs font-semibold mb-2 shadow-xs">
           <Sparkles className="h-3.5 w-3.5" />
           <span>ATS Resume Intelligence</span>
         </div>

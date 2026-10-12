@@ -254,7 +254,7 @@ export default function InterviewSetupPage() {
   return (
     <div className="container max-w-4xl mx-auto px-4 py-10 flex-1 space-y-8">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-400 text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200/80 dark:bg-violet-500/10 dark:text-violet-400 text-xs font-semibold mb-2 shadow-xs">
           <Mic className="h-3.5 w-3.5" />
           <span>Live Mock Interview Setup</span>
         </div>
