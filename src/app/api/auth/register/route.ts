@@ -50,9 +50,11 @@ export async function POST(req: NextRequest) {
       user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (error: any) {
-    console.error("Registration error:", error);
+    const errorMsg = error?.message?.includes("invocation")
+      ? "Database service is initializing. Please try again in a few moments."
+      : (error?.message || "Failed to create account.");
     return NextResponse.json(
-      { error: error?.message || "Failed to create account." },
+      { error: errorMsg },
       { status: 500 }
     );
   }
